@@ -10,6 +10,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

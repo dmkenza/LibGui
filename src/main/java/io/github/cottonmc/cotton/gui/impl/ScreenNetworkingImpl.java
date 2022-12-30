@@ -1,10 +1,12 @@
 package io.github.cottonmc.cotton.gui.impl;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import dev.architectury.networking.NetworkManager;
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
@@ -57,7 +59,8 @@ public class ScreenNetworkingImpl implements ScreenNetworking {
 		Objects.requireNonNull(message, "message");
 		Objects.requireNonNull(writer, "writer");
 
-		PacketByteBuf buf = PacketByteBufs.create();
+//		PacketByteBuf buf = PacketByteBufs.create();
+		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		buf.writeVarInt(description.syncId);
 		buf.writeIdentifier(message);
 		writer.accept(buf);
@@ -65,9 +68,14 @@ public class ScreenNetworkingImpl implements ScreenNetworking {
 	}
 
 	public static void init() {
-		ServerPlayNetworking.registerGlobalReceiver(SCREEN_MESSAGE_C2S, (server, player, networkHandler, buf, responseSender) -> {
-			handle(server, player, buf);
+
+		NetworkManager.registerReceiver(NetworkManager.Side.C2S, SCREEN_MESSAGE_C2S, (buf, context) -> {
+			handle(context.getPlayer().getServer(), context.getPlayer(), buf);
 		});
+
+//		ServerPlayNetworking.registerGlobalReceiver(SCREEN_MESSAGE_C2S, (server, player, networkHandler, buf, responseSender) -> {
+//			handle(server, player, buf);
+//		});
 	}
 
 	public static void handle(Executor executor, PlayerEntity player, PacketByteBuf buf) {

@@ -1,7 +1,7 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
 import net.fabricmc.loader.api.FabricLoader;
 
 import blue.endless.jankson.Jankson;
@@ -9,6 +9,8 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
 import io.github.cottonmc.jankson.JanksonFactory;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,33 +19,43 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class LibGuiClient implements ClientModInitializer {
-	public static final Logger logger = LogManager.getLogger();
-	public static volatile LibGuiConfig config;
+public class LibGuiClient  {
+    public static final Logger logger = LogManager.getLogger();
+    public static volatile LibGuiConfig config;
 
-	public static final Jankson jankson = JanksonFactory.createJankson();
+    public static volatile Jankson jankson;
 
-	@Override
-	public void onInitializeClient() {
-		config = loadConfig();
+    public static void onInitializeClient() {
 
-		ClientPlayNetworking.registerGlobalReceiver(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, (client, networkHandler, buf, responseSender) -> {
-			ScreenNetworkingImpl.handle(client, client.player, buf);
-		});
-	}
+        if (Platform.isFabric()) {
+            jankson = JanksonFactory.createJankson();
+            config = loadConfig();
+        } else {
+            config = new LibGuiConfig();
+        }
 
-	public static LibGuiConfig loadConfig() {
-		try {
-			Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
-			
-			if (Files.notExists(file)) saveConfig(new LibGuiConfig());
-			
-			JsonObject json;
-			try (InputStream in = Files.newInputStream(file)) {
-				json = jankson.load(in);
-			}
 
-			config =  jankson.fromJson(json, LibGuiConfig.class);
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, (buf, context) -> {
+            ScreenNetworkingImpl.handle(MinecraftClient.getInstance(), context.getPlayer(), buf);
+        });
+
+//		ClientPlayNetworking.registerGlobalReceiver(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, (client, networkHandler, buf, responseSender) -> {
+//			ScreenNetworkingImpl.handle(client, client.player, buf);
+//		});
+    }
+
+    public static LibGuiConfig loadConfig() {
+        try {
+            Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
+
+            if (Files.notExists(file)) saveConfig(new LibGuiConfig());
+
+            JsonObject json;
+            try (InputStream in = Files.newInputStream(file)) {
+                json = jankson.load(in);
+            }
+
+            config = jankson.fromJson(json, LibGuiConfig.class);
 			
 			/*
 			JsonElement jsonElementNew = jankson.toJson(new LibGuiConfig());
@@ -53,21 +65,21 @@ public class LibGuiClient implements ClientModInitializer {
 					saveConfig(config);
 				}
 			}*/
-		} catch (Exception e) {
-			logger.error("[LibGui] Error loading config: {}", e.getMessage());
-		}
-		return config;
-	}
+        } catch (Exception e) {
+            logger.error("[LibGui] Error loading config: {}", e.getMessage());
+        }
+        return config;
+    }
 
-	public static void saveConfig(LibGuiConfig config) {
-		try {
-			Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
-			
-			JsonElement json = jankson.toJson(config);
-			String result = json.toJson(true, true);
-			Files.write(file, result.getBytes(StandardCharsets.UTF_8));
-		} catch (Exception e) {
-			logger.error("[LibGui] Error saving config: {}", e.getMessage());
-		}
-	}
+    public static void saveConfig(LibGuiConfig config) {
+        try {
+            Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
+
+            JsonElement json = jankson.toJson(config);
+            String result = json.toJson(true, true);
+            Files.write(file, result.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            logger.error("[LibGui] Error saving config: {}", e.getMessage());
+        }
+    }
 }

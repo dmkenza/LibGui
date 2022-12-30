@@ -22,6 +22,8 @@ import io.github.cottonmc.cotton.gui.impl.VisualLogger;
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.icon.Icon;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public class WItemSlot extends WWidget {
 	private static final VisualLogger LOGGER = new VisualLogger(WItemSlot.class);
 	private final List<ValidatedSlot> peers = new ArrayList<>();
 	@Nullable
-	@Environment(EnvType.CLIENT)
+//	@Environment(EnvType.CLIENT)
 	private BackgroundPainter backgroundPainter = null;
 	@Nullable
 	private Icon icon = null;

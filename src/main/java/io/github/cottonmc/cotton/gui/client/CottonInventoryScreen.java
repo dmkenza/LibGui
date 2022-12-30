@@ -96,7 +96,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Handl
 	@Override
 	public void init() {
 		super.init();
-
+		client.keyboard.setRepeatEvents(true);
+		
 		WPanel root = description.getRootPanel();
 		if (root != null) root.addPainters();
 		description.addPainters();
@@ -107,6 +108,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Handl
 	@Override
 	public void removed() {
 		super.removed();
+		this.client.keyboard.setRepeatEvents(false);
 		VisualLogger.reset();
 	}
 

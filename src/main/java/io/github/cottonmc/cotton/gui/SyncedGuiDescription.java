@@ -1,10 +1,10 @@
 package io.github.cottonmc.cotton.gui;
 
+import net.examplemod.kenza.KPacketSender;
+import net.examplemod.kenza.KPlayerPacketSender;
+import net.examplemod.kenza.KServerPacketSender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
@@ -36,6 +36,8 @@ import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ import java.util.function.Supplier;
  * A screen handler-based GUI description for GUIs with slots.
  */
 public class SyncedGuiDescription extends ScreenHandler implements GuiDescription {
-	
+
 	protected Inventory blockInventory;
 	protected PlayerInventory playerInventory;
 	protected World world;
@@ -134,7 +136,7 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	}
 
 	@Override
-	public ItemStack quickMove(PlayerEntity player, int index) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack result = ItemStack.EMPTY;
 		Slot slot = slots.get(index);
 
@@ -565,16 +567,18 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	 * @return the packet sender
 	 * @since 3.3.0
 	 */
-	public final PacketSender getPacketSender() {
+	public final KPacketSender getPacketSender() {
 		if (getNetworkSide() == NetworkSide.SERVER) {
-			return ServerPlayNetworking.getSender((ServerPlayerEntity) playerInventory.player);
+			return KServerPacketSender.pool((ServerPlayerEntity) playerInventory.player);
+//			return ServerPlayNetworking.getSender((ServerPlayerEntity) playerInventory.player);
 		} else {
 			return getClientPacketSender();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private PacketSender getClientPacketSender() {
-		return ClientPlayNetworking.getSender();
+	private KPacketSender getClientPacketSender() {
+		return KPlayerPacketSender.getSender();
+//		return ClientPlayNetworking.getSender();
 	}
 }

@@ -30,3 +30,4 @@ bin/
 
 run/
 latest.log
+/src/main/mklink d java1 java

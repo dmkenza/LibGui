@@ -45,7 +45,7 @@ dependencies {
 			'fabric-rendering-v1': false,
 	]
 	fabricApiModules.forEach { module, api ->
-		def dependency = fabricApi.module(module, project.fabric_version)
+	def dependency = fabricApi.module(module, project.fabric_version)
 
 		if (api) {
 			modApi dependency

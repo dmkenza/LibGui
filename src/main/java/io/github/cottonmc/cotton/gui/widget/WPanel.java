@@ -7,6 +7,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
@@ -25,7 +27,8 @@ public abstract class WPanel extends WWidget {
 	 * <p>The list is mutable.
 	 */
 	protected final List<WWidget> children = new WidgetList(this, new ArrayList<>());
-	@Environment(EnvType.CLIENT)
+
+//	@Environment(EnvType.CLIENT)
 	private BackgroundPainter backgroundPainter = null;
 
 	/**

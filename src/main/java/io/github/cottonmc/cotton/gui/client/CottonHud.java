@@ -1,13 +1,15 @@
 package io.github.cottonmc.cotton.gui.client;
 
+import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 
 import io.github.cottonmc.cotton.gui.widget.WWidget;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +25,8 @@ public final class CottonHud {
 	private static final Map<WWidget, Positioner> positioners = new HashMap<>();
 
 	static {
-		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
+
+		ClientGuiEvent.RENDER_HUD.register((matrices, tickDelta) -> {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int hudWidth = window.getScaledWidth();
 			int hudHeight = window.getScaledHeight();
@@ -37,11 +40,32 @@ public final class CottonHud {
 			}
 		});
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+
+//		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
+//			Window window = MinecraftClient.getInstance().getWindow();
+//			int hudWidth = window.getScaledWidth();
+//			int hudHeight = window.getScaledHeight();
+//			for (WWidget widget : widgets) {
+//				Positioner positioner = positioners.get(widget);
+//				if (positioner != null) {
+//					positioner.reposition(widget, hudWidth, hudHeight);
+//				}
+//
+//				widget.paint(matrices, widget.getX(), widget.getY(), -1, -1);
+//			}
+//		});
+
+		ClientTickEvent.CLIENT_POST.register(client -> {
 			for (WWidget widget : widgets) {
 				widget.tick();
 			}
 		});
+
+//		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+//			for (WWidget widget : widgets) {
+//				widget.tick();
+//			}
+//		});
 	}
 
 	/**

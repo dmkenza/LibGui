@@ -62,7 +62,8 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 	@Override
 	public void init() {
 		super.init();
-
+		client.keyboard.setRepeatEvents(true);
+		
 		WPanel root = description.getRootPanel();
 		if (root != null) root.addPainters();
 		description.addPainters();
@@ -72,6 +73,7 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 	@Override
 	public void removed() {
 		super.removed();
+		this.client.keyboard.setRepeatEvents(false);
 		VisualLogger.reset();
 	}
 
